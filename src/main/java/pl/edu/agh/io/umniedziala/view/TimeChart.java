@@ -5,6 +5,8 @@ import javafx.collections.FXCollections;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.chart.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -12,6 +14,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.util.StringConverter;
 import pl.edu.agh.io.umniedziala.configuration.Configuration;
+import pl.edu.agh.io.umniedziala.model.CustomEventEntity;
 import pl.edu.agh.io.umniedziala.model.Period;
 import pl.edu.agh.io.umniedziala.model.RunningPeriodEntity;
 
@@ -36,10 +39,21 @@ public class TimeChart extends XYChart<Number, String> {
         private double length;
         private String style;
 
+        private String name;
+        private String desc;
+        private Date start;
+
         public ExtraData(double length, String style) {
             super();
             this.length = length;
             this.style = style;
+        }
+
+        public ExtraData(double length, String style, String name, String desc, Date start) {
+            this(length, style);
+            this.name = name;
+            this.desc = desc;
+            this.start = start;
         }
 
         public String getStyle() {
@@ -56,6 +70,10 @@ public class TimeChart extends XYChart<Number, String> {
 
         public void setLength(double length) {
             this.length = length;
+        }
+
+        public Date getStart() {
+            return start;
         }
     }
 
@@ -129,7 +147,7 @@ public class TimeChart extends XYChart<Number, String> {
         for (Map.Entry<Integer, String> ent : appNames.entrySet()) {
             addNewApp(ent.getKey(), ent.getValue());
         }
-        lineHeight = getYAxis().getHeight() / (appNames.size()+1);
+        lineHeight = getYAxis().getHeight() / (appNames.size() + 1);
 
         getYAxis().setVisible(false);
         getYAxis().setVisible(true);
@@ -138,7 +156,8 @@ public class TimeChart extends XYChart<Number, String> {
 
     public void setDataByResults(List<Period> results) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        SimpleDateFormat utc_sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        utc_sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         for (Series series : seriesMap.values()) {
             series.getData().clear();
@@ -146,22 +165,32 @@ public class TimeChart extends XYChart<Number, String> {
 
         for (Period ent : results) {
             int seriesId = 0;
-            if(ent instanceof RunningPeriodEntity)
+            if (ent instanceof RunningPeriodEntity)
                 seriesId = ((RunningPeriodEntity) ent).getApplicationId();
             XYChart.Series series = seriesMap.get(seriesId);
             Double start = 0.0;
+            Date startDate = null;
             Double length = 1.0;
             try {
-                Double end = (double) sdf.parse(ent.getEndTime()).getTime() % 86400000 / 1000.0;
-                start = (double) sdf.parse(ent.getStartTime()).getTime() % 86400000 / 1000.0;
+                Double end = (double) utc_sdf.parse(ent.getEndTime()).getTime() % 86400000 / 1000.0;
+                startDate = sdf.parse(ent.getStartTime());
+                start = (double) utc_sdf.parse(ent.getStartTime()).getTime() % 86400000 / 1000.0;
                 length = end - start; // czas w sekundach
             } catch (ParseException e) {
                 e.printStackTrace();
+                return;
             }
             start /= 3600.0;
             length /= 3600.0;
             String appName = appNames.get(seriesId);
-            series.getData().add(new XYChart.Data<Number, String>(start, appName, new ExtraData(length, ent.getColor())));
+            ExtraData ed;
+            if (ent instanceof CustomEventEntity) {
+                CustomEventEntity c = (CustomEventEntity) ent;
+                ed = new ExtraData(length, ent.getColor(), c.getName(), c.getDescription(), startDate);
+            } else {
+                ed = new ExtraData(length, ent.getColor());
+            }
+            series.getData().add(new XYChart.Data<Number, String>(start, appName, ed));
         }
     }
 
@@ -191,7 +220,8 @@ public class TimeChart extends XYChart<Number, String> {
                     } else {
                         return;
                     }
-                    box.setWidth(((ExtraData) item.getExtraValue()).getLength() * Math.abs(((NumberAxis) getXAxis()).getScale()));
+                    ExtraData extra = (ExtraData) item.getExtraValue();
+                    box.setWidth(extra.getLength() * Math.abs(((NumberAxis) getXAxis()).getScale()));
                     box.setHeight(lineHeight);
                     y -= lineHeight / 2.0;
 
@@ -203,6 +233,18 @@ public class TimeChart extends XYChart<Number, String> {
 
                     node.setLayoutX(x);
                     node.setLayoutY(y);
+
+                    if (extra.name != null)
+                        node.setOnMousePressed(e -> {
+                                    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+                                    String content = "Opis: " + extra.desc + "\n\n" + "Od: " + sdf.format(extra.start)
+                                            + "\nCzas trwania: " + extra.length*60 + "m";
+                                    Alert a = new Alert(Alert.AlertType.INFORMATION, content, ButtonType.OK);
+                                    a.setHeaderText(extra.name);
+                                    a.setTitle("Custom event");
+                                    a.showAndWait();
+                                }
+                        );
                 }
             }
         }

@@ -114,7 +114,7 @@ public class AppController {
             CustomEventController controller = loader.getController();
             controller.setAppController(this);
             controller.setStage(eventStage);
-            eventStage.show();
+            eventStage.showAndWait();
 
 
         } catch (IOException e) {
