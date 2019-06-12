@@ -2,14 +2,13 @@ package pl.edu.agh.io.umniedziala.view;
 
 import javafx.beans.NamedArg;
 import javafx.collections.FXCollections;
-import javafx.event.EventHandler;
+import javafx.event.Event;
+import javafx.event.EventType;
 import javafx.scene.Node;
 import javafx.scene.chart.*;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.util.StringConverter;
@@ -17,8 +16,8 @@ import pl.edu.agh.io.umniedziala.configuration.Configuration;
 import pl.edu.agh.io.umniedziala.model.AppPeriod;
 import pl.edu.agh.io.umniedziala.model.CustomEventEntity;
 import pl.edu.agh.io.umniedziala.model.Period;
-import pl.edu.agh.io.umniedziala.model.RunningPeriodEntity;
 
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -35,46 +34,32 @@ public class TimeChart extends XYChart<Number, String> {
     private Map<Integer, String> appNames;
     private Map<Integer, XYChart.Series> seriesMap = new HashMap<>();
 
-    public static class ExtraData {
+    static class ExtraData {
+        double length;
+        String style;
 
-        private double length;
-        private String style;
-
-        private String name;
-        private String desc;
-        private Date start;
-
-        public ExtraData(double length, String style) {
+        ExtraData(double length, String style) {
             super();
             this.length = length;
             this.style = style;
         }
+    }
 
-        public ExtraData(double length, String style, String name, String desc, Date start) {
-            this(length, style);
-            this.name = name;
-            this.desc = desc;
+    static class CustomExtraData extends ExtraData {
+
+        String name;
+        String desc;
+        Date start;
+        int id;
+
+        CustomExtraData(double length, Date start, CustomEventEntity c) {
+            // length i start są przekazywane, a nie wybierane i obliczane z CustomEventEntity bo są już
+            // policzone gdzie indziej i tak jest wygodnie
+            super(length, c.getColor());
+            this.name = c.getName();
+            this.desc = c.getDescription();
             this.start = start;
-        }
-
-        public String getStyle() {
-            return style;
-        }
-
-        public void setStyle(String style) {
-            this.style = style;
-        }
-
-        public double getLength() {
-            return length;
-        }
-
-        public void setLength(double length) {
-            this.length = length;
-        }
-
-        public Date getStart() {
-            return start;
+            this.id = c.getId();
         }
     }
 
@@ -187,7 +172,7 @@ public class TimeChart extends XYChart<Number, String> {
             ExtraData ed;
             if (ent instanceof CustomEventEntity) {
                 CustomEventEntity c = (CustomEventEntity) ent;
-                ed = new ExtraData(length, ent.getColor(), c.getName(), c.getDescription(), startDate);
+                ed = new CustomExtraData(length, startDate, c);
             } else {
                 ed = new ExtraData(length, ent.getColor());
             }
@@ -215,14 +200,14 @@ public class TimeChart extends XYChart<Number, String> {
                 if (node instanceof StackPane) {
                     StackPane region = (StackPane) item.getNode();
                     if (region.getShape() == null) {
-                        box = new Rectangle(((ExtraData) item.getExtraValue()).getLength(), lineHeight);
+                        box = new Rectangle(((ExtraData) item.getExtraValue()).length, lineHeight);
                     } else if (region.getShape() instanceof Rectangle) {
                         box = (Rectangle) region.getShape();
                     } else {
                         return;
                     }
                     ExtraData extra = (ExtraData) item.getExtraValue();
-                    box.setWidth(extra.getLength() * Math.abs(((NumberAxis) getXAxis()).getScale()));
+                    box.setWidth(extra.length * Math.abs(((NumberAxis) getXAxis()).getScale()));
                     box.setHeight(lineHeight);
                     y -= lineHeight / 2.0;
 
@@ -235,15 +220,29 @@ public class TimeChart extends XYChart<Number, String> {
                     node.setLayoutX(x);
                     node.setLayoutY(y);
 
-                    if (extra.name != null)
+                    if (extra instanceof CustomExtraData)
+                        // to chyba powinno być przeniesione do Controllera ale co tam
                         node.setOnMousePressed(e -> {
+                                    CustomExtraData cextra = (CustomExtraData) extra;
                                     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-                                    String content = "Opis: " + extra.desc + "\n\n" + "Od: " + sdf.format(extra.start)
-                                            + "\nCzas trwania: " + extra.length*60 + "m";
-                                    Alert a = new Alert(Alert.AlertType.INFORMATION, content, ButtonType.OK);
-                                    a.setHeaderText(extra.name);
+                                    ButtonType deletDis = new ButtonType("Delete");
+                                    String content = "Opis: " + cextra.desc + "\n\n" + "Od: " + sdf.format(cextra.start)
+                                            + "\nCzas trwania: " + cextra.length * 60 + "m";
+                                    Alert a = new Alert(Alert.AlertType.INFORMATION, content, ButtonType.OK, deletDis);
+                                    a.setHeaderText(cextra.name);
                                     a.setTitle("Custom event");
-                                    a.showAndWait();
+                                    Optional<ButtonType> option = a.showAndWait();
+                                    if(option.isPresent() && option.get() == deletDis){
+                                        try {
+                                            CustomEventEntity.delete(cextra.id);
+                                            cextra.length = 0; // xd. Gdyby to był kontroler to możnaby uruchomić refreshChart() ale tak w sumie jest szybciej
+                                            layoutPlotChildren();
+                                        } catch (SQLException ex) {
+                                            ex.printStackTrace();
+                                            new Alert(Alert.AlertType.ERROR, "Nie udało się usunąć custom eventa: "
+                                            + ex.getMessage(), ButtonType.OK).showAndWait();
+                                        }
+                                    }
                                 }
                         );
                 }
@@ -298,7 +297,7 @@ public class TimeChart extends XYChart<Number, String> {
         }
 
         // TODO: nie wybierania kolorów jeszcze. Wszystko jest różowe
-        String style = ((ExtraData) item.getExtraValue()).getStyle();
+        String style = ((ExtraData) item.getExtraValue()).style;
         /*
         int red = (int) (style.getRed() * 255);
         int green = (int) (style.getGreen() * 255);
@@ -325,7 +324,7 @@ public class TimeChart extends XYChart<Number, String> {
                 for (Data<Number, String> data : series.getData()) {
                     if (xData != null) {
                         xData.add(data.getXValue());
-                        xData.add(xa.toRealValue(xa.toNumericValue(data.getXValue()) + ((ExtraData) data.getExtraValue()).getLength()));
+                        xData.add(xa.toRealValue(xa.toNumericValue(data.getXValue()) + ((ExtraData) data.getExtraValue()).length));
                     }
                     if (yData != null) {
                         yData.add(data.getYValue());

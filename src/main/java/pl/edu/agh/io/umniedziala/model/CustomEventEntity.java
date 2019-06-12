@@ -55,6 +55,14 @@ public class CustomEventEntity extends Period {
         return CustomEventEntity.findById(id);
     }
 
+    public static void delete(final int id) throws SQLException {
+        String deleteDis = String.format("delete from %s where %s = %s",
+                TABLE_NAME,
+                Columns.ID, id
+                );
+        QuerryExecutor.delete(deleteDis);
+    }
+
     public static void update(final int id, final String startTime, final String endTime, final String name, final String description, final String color) {
         String setString = getSetString(startTime, endTime, name, description, color);
 
