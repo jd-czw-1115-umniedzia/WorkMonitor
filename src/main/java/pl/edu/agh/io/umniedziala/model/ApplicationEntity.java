@@ -68,7 +68,7 @@ public class ApplicationEntity {
     }
 
     public static Optional<ApplicationEntity> findByApplicationPath(final String applicationPath) {
-        String findByNameSql = String.format("SELECT * FROM %s WHERE %s = %s", TABLE_NAME, Columns.APPLICATION_PATH, applicationPath);
+        String findByNameSql = String.format("SELECT * FROM %s WHERE %s = '%s'", TABLE_NAME, Columns.APPLICATION_PATH, applicationPath);
 
         ResultSet rs;
         try {
@@ -147,6 +147,14 @@ public class ApplicationEntity {
         }
 
         return Optional.empty();
+    }
+
+    public static void delete(final int id) throws SQLException {
+        String deleteDis = String.format("delete from %s where %s = %s",
+                TABLE_NAME,
+                Columns.ID, id
+        );
+        QuerryExecutor.delete(deleteDis);
     }
 
 

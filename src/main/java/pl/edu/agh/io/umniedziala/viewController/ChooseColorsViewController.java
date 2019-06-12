@@ -30,6 +30,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -85,8 +86,10 @@ public class ChooseColorsViewController {
         appColorsTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<App>() {
             @Override
             public void changed(ObservableValue<? extends App> observable, App oldValue, App newValue) {
-                colorPicker.setValue(Color.valueOf(newValue.getColor()));
-                changedApp = newValue;
+                if(newValue != null) {
+                    colorPicker.setValue(Color.valueOf(newValue.getColor()));
+                    changedApp = newValue;
+                }
             }
         });
 
@@ -130,7 +133,13 @@ public class ChooseColorsViewController {
     @FXML
     public void handleDeleteButton(ActionEvent event){
         if (changedApp == null) return;
-        managingApplicationsController.deleteApplication(changedApp.getPath());
+        try {
+            managingApplicationsController.deleteApplication(changedApp.getPath());
+            appColorsTable.getItems().remove(changedApp);
+            new Alert(Alert.AlertType.INFORMATION, "Deleted", ButtonType.OK).showAndWait();
+        } catch (SQLException | IllegalArgumentException | IllegalStateException e){
+            new Alert(Alert.AlertType.ERROR, "Deleting failed: " + e.getMessage(), ButtonType.OK).showAndWait();
+        }
     }
 
     private class App {

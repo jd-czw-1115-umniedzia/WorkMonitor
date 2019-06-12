@@ -113,7 +113,7 @@ public class SettingsViewController {
             controller.setAppController(this.appController);
             controller.setStage(colorsStage);
             controller.loadData();
-            colorsStage.show();
+            colorsStage.showAndWait();
 
         } catch (IOException e) {
             e.printStackTrace();
