@@ -162,7 +162,6 @@ public class ChooseColorsViewController {
                 g.dispose();
                 this.image = SwingFXUtils.toFXImage(bi, null);
             } catch (FileNotFoundException e) {
-                e.printStackTrace();
                 this.image = new Image("file:krimit.png");
             }
         }
