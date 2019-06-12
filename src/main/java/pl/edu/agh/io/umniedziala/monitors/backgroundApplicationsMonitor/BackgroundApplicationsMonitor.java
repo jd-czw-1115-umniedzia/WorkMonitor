@@ -56,11 +56,13 @@ public class BackgroundApplicationsMonitor extends Thread {
             for(ApplicationEntity applicationEntity : applicationEntityList){
 
                 int id = applicationEntity.getId();
+
                 if(BackgroundPeriodEntity.findById(entitiesMap.get(id)).isPresent()){
                     BackgroundPeriodEntity.update(entitiesMap.get(id), BackgroundPeriodEntity.findById(entitiesMap.get(id)).get().getStartTime(), dateFormat.format(new Date()));
                 } else {
                     String start = dateFormat.format(new Date());
-                    BackgroundPeriodEntity.create(start,start,id);
+                    int id_back = BackgroundPeriodEntity.create(start,start,id).get().getId();
+                    entitiesMap.put(id, id_back);
                 }
             }
 
