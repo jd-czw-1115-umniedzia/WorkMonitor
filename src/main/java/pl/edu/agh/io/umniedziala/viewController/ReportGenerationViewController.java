@@ -21,12 +21,7 @@ import java.time.LocalDate;
 public class ReportGenerationViewController {
 
     private AppController appController;
-    private LocalDate from;
-    private LocalDate to;
     private Stage stage;
-
-    private Boolean fromSet = false;
-    private Boolean toSet = false;
 
     @FXML
     private DatePicker fromDate;
@@ -43,6 +38,11 @@ public class ReportGenerationViewController {
     @FXML
     private CheckBox generateReportApp;
 
+    @FXML
+    public void initialize(){
+        fromDate.setValue(LocalDate.now());
+        toDate.setValue(LocalDate.now());
+    }
 
     public void setAppController(AppController appController) {
         this.appController = appController;
@@ -53,31 +53,16 @@ public class ReportGenerationViewController {
     }
 
     @FXML
-    public void toPickedHandler(ActionEvent event){
-        to = toDate.getValue();
-        toSet = true;
-    }
-
-    @FXML
-    public void fromPickedHandler(ActionEvent event){
-        from = fromDate.getValue();
-        fromSet = true;
-    }
-
-    @FXML
     public void generateHandler(ActionEvent event) {
-        if( fromSet && toSet){
-            try {
-                BasicReport basicReport = new BasicReport(from,to);
-                if (generateReportApp.isSelected()) basicReport.createReportWithApps();
-                else basicReport.createReportWithoutApps();
-            } catch (IOException e){
-                errorText.setText("Report not generated");
-            }
-            stage.close();
-        } else {
-            errorText.setText("Choose from and to date!");
+        LocalDate from = fromDate.getValue();
+        LocalDate to = toDate.getValue();
+        try {
+            BasicReport basicReport = new BasicReport(from,to);
+            if (generateReportApp.isSelected()) basicReport.createReportWithApps();
+            else basicReport.createReportWithoutApps();
+        } catch (IOException e){
+            errorText.setText("Report not generated");
         }
-
+        stage.close();
     }
 }
