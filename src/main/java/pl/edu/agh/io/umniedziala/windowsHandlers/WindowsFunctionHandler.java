@@ -68,8 +68,6 @@ public class WindowsFunctionHandler {
         try {
 
             while (kernel32.Process32Next(processSnapshot, processEntry)) {
-                // looks for a specific process
-                System.out.print(processEntry.th32ProcessID + "\t" + Native.toString(processEntry.szExeFile) + "\t");
                 WinNT.HANDLE moduleSnapshot =
                         kernel32.CreateToolhelp32Snapshot(Tlhelp32.TH32CS_SNAPMODULE, processEntry.th32ProcessID);
                 try {
