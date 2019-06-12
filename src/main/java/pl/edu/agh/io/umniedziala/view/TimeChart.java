@@ -232,9 +232,14 @@ public class TimeChart extends XYChart<Number, String> {
                         node.setOnMousePressed(e -> {
                                     CustomExtraData cextra = (CustomExtraData) extra;
                                     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+                                    SimpleDateFormat utc_sdf = new SimpleDateFormat("HH:mm");
+                                    utc_sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+                                    String time = utc_sdf.format(new java.util.Date((long) (cextra.length*60*60*1000)));
                                     ButtonType deletDis = new ButtonType("Delete");
+                                    Date end = new Date((long) (cextra.start.getTime() + cextra.length*60*60*1000));
                                     String content = "Opis: " + cextra.desc + "\n\n" + "Od: " + sdf.format(cextra.start)
-                                            + "\nCzas trwania: " + cextra.length * 60 + "m";
+                                            + "\nDo: " + sdf.format(end)
+                                            + "\nCzas trwania: " + time;
                                     Alert a = new Alert(Alert.AlertType.INFORMATION, content, ButtonType.OK, deletDis);
                                     a.setHeaderText(cextra.name);
                                     a.setTitle("Custom event");

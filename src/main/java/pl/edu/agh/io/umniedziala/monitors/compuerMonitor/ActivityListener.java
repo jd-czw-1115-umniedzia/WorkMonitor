@@ -61,13 +61,6 @@ public class ActivityListener extends Thread implements NativeMouseInputListener
     }
 
     public void nativeKeyPressed(NativeKeyEvent e) {
-        if (e.getKeyCode() == NativeKeyEvent.VC_ESCAPE) {
-            try {
-                GlobalScreen.unregisterNativeHook();
-            } catch (NativeHookException e1) {
-                e1.printStackTrace();
-            }
-        }
         startTime = System.nanoTime();
         setActiveAgain(true);
     }
