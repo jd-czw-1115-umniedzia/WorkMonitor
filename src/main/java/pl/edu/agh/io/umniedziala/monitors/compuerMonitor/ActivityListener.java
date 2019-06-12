@@ -7,10 +7,12 @@ import org.jnativehook.mouse.NativeMouseEvent;
 import org.jnativehook.mouse.NativeMouseInputListener;
 import pl.edu.agh.io.umniedziala.configuration.Configuration;
 import pl.edu.agh.io.umniedziala.model.ComputerRunningPeriodEntity;
+import pl.edu.agh.io.umniedziala.model.Period;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Optional;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -107,7 +109,10 @@ public class ActivityListener extends Thread implements NativeMouseInputListener
         }
 
         start = dateFormat.format(new Date());
-        lastRunningPeriodId = ComputerRunningPeriodEntity.create(start, start).get().getId();
+
+        Optional<ComputerRunningPeriodEntity> lrpi = ComputerRunningPeriodEntity.create(start, start);
+        lastRunningPeriodId = lrpi.map(Period::getId).orElseGet(() -> ComputerRunningPeriodEntity.findByStartDate(start).lastIndexOf(start));
+
         System.out.println("ACTIVE: " + dateFormat.format(new Date()));
 
         startTime  = System.nanoTime();
