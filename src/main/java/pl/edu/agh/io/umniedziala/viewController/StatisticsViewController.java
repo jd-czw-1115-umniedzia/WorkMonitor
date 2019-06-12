@@ -5,6 +5,8 @@
 package pl.edu.agh.io.umniedziala.viewController;
 
 
+import javafx.collections.FXCollections;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
@@ -14,10 +16,8 @@ import javafx.stage.Stage;
 import pl.edu.agh.io.umniedziala.model.ApplicationEntity;
 import pl.edu.agh.io.umniedziala.model.ReportEntryEntity;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
@@ -77,11 +77,16 @@ public class StatisticsViewController {
             }
         }
 
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         for(String app : appWithHoursPerDay.keySet()){
-            Map<Date, Float> hoursPerDay = appWithHoursPerDay.get(app);
             XYChart.Series series = new XYChart.Series();
             series.setName(app);
-            hoursPerDay.forEach((Date, Val) -> series.getData().add(new XYChart.Data<>(Date.toString(), Val)));
+            ArrayList<Map.Entry<Date, Float>> hoursPerDay = new ArrayList<>(appWithHoursPerDay.get(app).entrySet());
+            hoursPerDay.sort(Comparator.comparing(Map.Entry::getKey));
+            hoursPerDay.forEach(entry -> {
+                series.getData().add(new XYChart.Data<>(sdf.format(entry.getKey()), entry.getValue()));
+            });
             chart.getData().add(series);
         }
         usageAxis.setLabel("Usage [H]");

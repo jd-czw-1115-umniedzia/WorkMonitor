@@ -22,7 +22,19 @@ public class DataBaseConnectionProvider {
             System.err.println("Couldnt initialize connection to database");
         }
 
+        enableForeignKeys();
         initDatabase();
+    }
+
+    private static void enableForeignKeys() {
+        try {
+            final Statement statement = getConnection().createStatement();
+            statement.execute("PRAGMA foreign_keys=ON");
+
+        } catch (SQLException e) {
+            System.err.println("Couldnt enable foreign keys");
+            e.printStackTrace();
+        }
     }
 
     private static void initDatabase() {
@@ -44,8 +56,8 @@ public class DataBaseConnectionProvider {
                     "  start_time datetime not null," +
                     "  end_time datetime not null," +
                     "  application_id int not null" +
-                    "    constraint application_id___fk" +
-                    "    references application" +
+                    "    references application(id)" +
+                    "    on delete cascade" +
                     ");");
         } catch (SQLException e) {
             System.err.println("Couldnt create table running_period");
@@ -83,8 +95,8 @@ public class DataBaseConnectionProvider {
                     " start_time datetime not null," +
                     " end_time datetime not null," +
                     " application_id int not null" +
-                    "    constraint application_id___fk" +
-                    "    references application" +
+                    "    references application(id)" +
+                    "    on delete cascade" +
                     ");");
         } catch (SQLException e) {
             System.err.println("Couldnt create table background_period");
@@ -98,7 +110,6 @@ public class DataBaseConnectionProvider {
     }
 
 
-    
     public static Connection getConnection() {
         return connection.orElseThrow(() -> new RuntimeException("Connection is not valid."));
     }

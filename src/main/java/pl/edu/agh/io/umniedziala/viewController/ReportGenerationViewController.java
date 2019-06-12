@@ -21,8 +21,6 @@ import java.time.LocalDate;
 public class ReportGenerationViewController {
 
     private AppController appController;
-    private LocalDate from;
-    private LocalDate to;
     private Stage stage;
 
 
@@ -50,37 +48,28 @@ public class ReportGenerationViewController {
     }
 
     @FXML
-    public void initialize(){
+    public void initialize() {
         toDate.setValue(LocalDate.now());
         fromDate.setValue(LocalDate.now().minusDays(7));
-        to = toDate.getValue();
-        from = fromDate.getValue();
-    }
-
-    @FXML
-    public void toPickedHandler(ActionEvent event){
-        to = toDate.getValue();
-    }
-
-    @FXML
-    public void fromPickedHandler(ActionEvent event){
-        from = fromDate.getValue();
     }
 
     @FXML
     public void generateHandler(ActionEvent event) {
-        if (from.compareTo(to) <= 0){
+        LocalDate to = toDate.getValue();
+        LocalDate from = fromDate.getValue();
+        if (from.compareTo(to) <= 0) {
             try {
-                BasicReport basicReport = new BasicReport(from,to);
-                if (generateReportApp.isSelected()) basicReport.createReportWithApps();
-                else basicReport.createReportWithoutApps();
-            } catch (IOException e){
+                BasicReport basicReport = new BasicReport(from, to);
+                if (generateReportApp.isSelected())
+                    basicReport.createReportWithApps();
+                else
+                    basicReport.createReportWithoutApps();
+                stage.close();
+            } catch (IOException e) {
                 errorText.setText("Report not generated");
             }
-            stage.close();
         } else {
             errorText.setText("Invalid date range!");
         }
-
     }
 }

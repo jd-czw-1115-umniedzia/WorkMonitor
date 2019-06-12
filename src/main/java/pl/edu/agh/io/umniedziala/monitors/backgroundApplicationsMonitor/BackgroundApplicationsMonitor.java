@@ -2,6 +2,7 @@ package pl.edu.agh.io.umniedziala.monitors.backgroundApplicationsMonitor;
 
 import pl.edu.agh.io.umniedziala.model.ApplicationEntity;
 import pl.edu.agh.io.umniedziala.model.BackgroundPeriodEntity;
+import pl.edu.agh.io.umniedziala.model.Period;
 import pl.edu.agh.io.umniedziala.model.RunningPeriodEntity;
 import pl.edu.agh.io.umniedziala.windowsHandlers.WindowsFunctionHandler;
 
@@ -29,12 +30,13 @@ public class BackgroundApplicationsMonitor extends Thread {
     }
 
     private void initValues(){
-
         applicationEntityList = ApplicationEntity.getAllApplications();
-
         for(ApplicationEntity applicationEntity : applicationEntityList){
             String start = dateFormat.format(new Date());
-            int id = BackgroundPeriodEntity.create(start,start,applicationEntity.getId()).get().getId();
+
+            int id;
+            Optional<BackgroundPeriodEntity> bpe = BackgroundPeriodEntity.create(start, start, applicationEntity.getId());
+            id = bpe.map(Period::getId).orElseGet(() -> BackgroundPeriodEntity.findByStartDate(start).lastIndexOf(start));
             entitiesMap.put(applicationEntity.getId(), id);
         }
     }
@@ -45,31 +47,30 @@ public class BackgroundApplicationsMonitor extends Thread {
 
         while(!exit){
 
-            applicationEntityList = ApplicationEntity.getAllApplications();
+            Map<String, String> processes = WindowsFunctionHandler.getAllRunningProcesses();
 
-            for(ApplicationEntity applicationEntity : applicationEntityList){
-                int id = applicationEntity.getId();
-
-                if(RunningPeriodEntity.findById(entitiesMap.get(id)).isPresent()){
-                    int appId = RunningPeriodEntity.findById(entitiesMap.get(id)).get().getApplicationId();
-                    applicationEntityList.remove(ApplicationEntity.findById(appId));
+            for(ApplicationEntity applicationEntity : ApplicationEntity.getAllApplications()){
+                if(processes.containsKey(applicationEntity.getName())){
+                    applicationEntityList.add(applicationEntity);
                 }
             }
 
             applicationEntityList.remove(ApplicationEntity.findByName(WindowsFunctionHandler.getCurrentActiveWindowName().orElse("")));
 
             for(ApplicationEntity applicationEntity : applicationEntityList){
+
                 int id = applicationEntity.getId();
 
                 if(BackgroundPeriodEntity.findById(entitiesMap.get(id)).isPresent()){
-
                     BackgroundPeriodEntity.update(entitiesMap.get(id), BackgroundPeriodEntity.findById(entitiesMap.get(id)).get().getStartTime(), dateFormat.format(new Date()));
-
                 } else {
                     String start = dateFormat.format(new Date());
-                    BackgroundPeriodEntity.create(start,start,id);
+                    int id_back = BackgroundPeriodEntity.create(start,start,id).get().getId();
+                    entitiesMap.put(id, id_back);
                 }
             }
+
+            applicationEntityList.clear();
 
             try{
                 Thread.sleep(checkingIntervalInMs);

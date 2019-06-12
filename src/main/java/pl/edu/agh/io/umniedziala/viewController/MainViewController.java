@@ -164,7 +164,7 @@ public class MainViewController {
             currentDate.setTime(cal.getTimeInMillis());
             date.setText(dateFormat.format(currentDate.getTime()));
 
-            loadExistingDataToTimechart(new Date(cal.getTimeInMillis()));
+            refreshChart();
         }
     }
 
@@ -182,6 +182,7 @@ public class MainViewController {
     @FXML
     public void handleSettingsButton(ActionEvent event) {
         appController.showSettingsWindow();
+        refreshChart();
     }
 
     @FXML

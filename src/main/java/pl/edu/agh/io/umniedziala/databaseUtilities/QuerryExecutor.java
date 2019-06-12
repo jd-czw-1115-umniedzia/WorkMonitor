@@ -18,7 +18,7 @@ public class QuerryExecutor {
 
     public static int createAndObtainId(final String insertSql) throws SQLException {
         try (final PreparedStatement statement = DataBaseConnectionProvider.getConnection().prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)) {
-            statement.execute();
+            statement.executeUpdate();
             try (final ResultSet resultSet = statement.getGeneratedKeys()) {
                 return readIdFromResultSet(resultSet);
             }

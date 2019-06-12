@@ -127,6 +127,9 @@ public class BackgroundPeriodEntity extends AppPeriod {
 
     public static Optional<BackgroundPeriodEntity> returnBackgroundPeriod(ResultSet rs) {
         try {
+            if (rs.isClosed())
+                return Optional.empty();
+
             return Optional.of(new BackgroundPeriodEntity(
                     rs.getInt(Columns.ID),
                     rs.getString(Columns.START_TIME),

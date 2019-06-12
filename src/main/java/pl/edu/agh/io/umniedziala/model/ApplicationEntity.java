@@ -57,9 +57,8 @@ public class ApplicationEntity {
     public static Optional<ApplicationEntity> findByName(final String name) {
         String findByNameSql = String.format("SELECT * FROM %s WHERE %s = '%s'", TABLE_NAME, Columns.NAME, name);
 
-        ResultSet rs;
         try {
-            rs = QuerryExecutor.read(findByNameSql);
+            ResultSet rs = QuerryExecutor.read(findByNameSql);
             return returnApplication(rs);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -69,7 +68,7 @@ public class ApplicationEntity {
     }
 
     public static Optional<ApplicationEntity> findByApplicationPath(final String applicationPath) {
-        String findByNameSql = String.format("SELECT * FROM %s WHERE %s = %s", TABLE_NAME, Columns.APPLICATION_PATH, applicationPath);
+        String findByNameSql = String.format("SELECT * FROM %s WHERE %s = '%s'", TABLE_NAME, Columns.APPLICATION_PATH, applicationPath);
 
         ResultSet rs;
         try {
@@ -132,7 +131,11 @@ public class ApplicationEntity {
 
 
     private static Optional<ApplicationEntity> returnApplication(ResultSet rs) {
+
         try {
+            if (rs.isClosed())
+                return Optional.empty();
+
             return Optional.of(new ApplicationEntity(
                     rs.getInt(Columns.ID),
                     rs.getString(Columns.NAME),
@@ -144,6 +147,14 @@ public class ApplicationEntity {
         }
 
         return Optional.empty();
+    }
+
+    public static void delete(final int id) throws SQLException {
+        String deleteDis = String.format("delete from %s where %s = %s",
+                TABLE_NAME,
+                Columns.ID, id
+        );
+        QuerryExecutor.delete(deleteDis);
     }
 
 
