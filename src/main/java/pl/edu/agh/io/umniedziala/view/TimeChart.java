@@ -14,6 +14,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.util.StringConverter;
 import pl.edu.agh.io.umniedziala.configuration.Configuration;
+import pl.edu.agh.io.umniedziala.model.AppPeriod;
 import pl.edu.agh.io.umniedziala.model.CustomEventEntity;
 import pl.edu.agh.io.umniedziala.model.Period;
 import pl.edu.agh.io.umniedziala.model.RunningPeriodEntity;
@@ -165,8 +166,8 @@ public class TimeChart extends XYChart<Number, String> {
 
         for (Period ent : results) {
             int seriesId = 0;
-            if (ent instanceof RunningPeriodEntity)
-                seriesId = ((RunningPeriodEntity) ent).getApplicationId();
+            if (ent instanceof AppPeriod)
+                seriesId = ((AppPeriod) ent).getApplicationId();
             XYChart.Series series = seriesMap.get(seriesId);
             Double start = 0.0;
             Date startDate = null;

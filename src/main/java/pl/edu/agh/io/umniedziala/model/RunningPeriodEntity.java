@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class RunningPeriodEntity extends Period {
+public class RunningPeriodEntity extends AppPeriod {
 
     public static final String TABLE_NAME = "running_period";
 
@@ -127,6 +127,7 @@ public class RunningPeriodEntity extends Period {
         return Optional.empty();
     }
 
+    @Override
     public int getApplicationId() {
         return applicationId;
     }

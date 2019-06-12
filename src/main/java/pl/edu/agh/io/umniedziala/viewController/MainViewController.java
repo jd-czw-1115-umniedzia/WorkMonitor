@@ -18,10 +18,7 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import pl.edu.agh.io.umniedziala.databaseUtilities.QuerryExecutor;
-import pl.edu.agh.io.umniedziala.model.ComputerRunningPeriodEntity;
-import pl.edu.agh.io.umniedziala.model.CustomEventEntity;
-import pl.edu.agh.io.umniedziala.model.Period;
-import pl.edu.agh.io.umniedziala.model.RunningPeriodEntity;
+import pl.edu.agh.io.umniedziala.model.*;
 import pl.edu.agh.io.umniedziala.view.TimeChart;
 import sun.java2d.pipe.SpanShapeRenderer;
 
@@ -134,7 +131,9 @@ public class MainViewController {
     private void loadExistingDataToTimechart(Date date) throws SQLException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String sDate = sdf.format(date);
-        List<Period> results = QuerryExecutor.getPeriodsForDay(date);
+        List<Period> results = new ArrayList<>();
+        results.addAll(BackgroundPeriodEntity.findByStartDate(sDate));
+        results.addAll(QuerryExecutor.getPeriodsForDay(date));
         results.addAll(ComputerRunningPeriodEntity.findByStartDate(sDate));
         results.addAll(CustomEventEntity.findByStartDate(sDate));
         activity_chart.setDataByResults(results);
