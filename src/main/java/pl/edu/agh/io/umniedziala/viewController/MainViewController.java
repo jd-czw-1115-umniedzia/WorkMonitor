@@ -32,8 +32,6 @@ import java.util.*;
 public class MainViewController {
     private AppController appController;
     DateFormat dateFormat = new SimpleDateFormat("EEEE, dd.MM.yyyy");
-    final FileChooser fileChooser = new FileChooser();
-    ManagingApplicationsController managingApplicationsController;
     final static String DEFAULT_COLOR = "#000000";
     private Timer refreshTimer = new Timer();
 
@@ -94,7 +92,6 @@ public class MainViewController {
     public void initialize() {
         currentDate = new Date();
         date.setText(dateFormat.format(currentDate));
-        managingApplicationsController = new ManagingApplicationsController();
     }
 
     public void startTimechartUpdates() {
@@ -173,15 +170,8 @@ public class MainViewController {
 
     @FXML
     public void handleAppButton(ActionEvent event) {
-        File file = fileChooser.showOpenDialog(new Stage());
-        if (file != null) {
-            if (managingApplicationsController.addNewApplicationByPath(file.getAbsolutePath(), DEFAULT_COLOR)) {
-                new Alert(Alert.AlertType.INFORMATION, "Dodano", ButtonType.OK).showAndWait();
-            } else {
-                new Alert(Alert.AlertType.WARNING, "Nie udało się dodać aplikacji", ButtonType.OK).showAndWait();
-            }
-            refreshChart();
-        }
+        appController.showAddApplicationWindow();
+        refreshChart();
     }
 
     @FXML

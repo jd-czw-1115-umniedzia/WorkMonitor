@@ -25,8 +25,6 @@ public class ReportGenerationViewController {
     private LocalDate to;
     private Stage stage;
 
-    private Boolean fromSet = false;
-    private Boolean toSet = false;
 
     @FXML
     private DatePicker fromDate;
@@ -43,7 +41,6 @@ public class ReportGenerationViewController {
     @FXML
     private CheckBox generateReportApp;
 
-
     public void setAppController(AppController appController) {
         this.appController = appController;
     }
@@ -53,20 +50,26 @@ public class ReportGenerationViewController {
     }
 
     @FXML
+    public void initialize(){
+        toDate.setValue(LocalDate.now());
+        fromDate.setValue(LocalDate.now().minusDays(7));
+        to = toDate.getValue();
+        from = fromDate.getValue();
+    }
+
+    @FXML
     public void toPickedHandler(ActionEvent event){
         to = toDate.getValue();
-        toSet = true;
     }
 
     @FXML
     public void fromPickedHandler(ActionEvent event){
         from = fromDate.getValue();
-        fromSet = true;
     }
 
     @FXML
     public void generateHandler(ActionEvent event) {
-        if( fromSet && toSet){
+        if (from.compareTo(to) <= 0){
             try {
                 BasicReport basicReport = new BasicReport(from,to);
                 if (generateReportApp.isSelected()) basicReport.createReportWithApps();
@@ -76,7 +79,7 @@ public class ReportGenerationViewController {
             }
             stage.close();
         } else {
-            errorText.setText("Choose from and to date!");
+            errorText.setText("Invalid date range!");
         }
 
     }
