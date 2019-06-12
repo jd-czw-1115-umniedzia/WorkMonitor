@@ -41,7 +41,6 @@ public class ReportGenerationViewController {
     @FXML
     private CheckBox generateReportApp;
 
-
     public void setAppController(AppController appController) {
         this.appController = appController;
     }
