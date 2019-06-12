@@ -46,7 +46,7 @@ public class BackgroundApplicationsMonitor extends Thread {
             Map<String, String> processes = WindowsFunctionHandler.getAllRunningProcesses();
 
             for(ApplicationEntity applicationEntity : ApplicationEntity.getAllApplications()){
-                if(processes.containsValue(applicationEntity.getApplicationPath())){
+                if(processes.containsKey(applicationEntity.getName())){
                     applicationEntityList.add(applicationEntity);
                 }
             }
