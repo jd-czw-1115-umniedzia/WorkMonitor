@@ -92,6 +92,7 @@
                                   <MenuItem fx:id="appButton" mnemonicParsing="false" onAction="#handleAppButton" text="Add application to track" />
                                   <MenuItem fx:id="reportButton" mnemonicParsing="false" onAction="#handleReportButton" text="Generate report" />
                                   <MenuItem fx:id="eventButton" mnemonicParsing="false" onAction="#handleEventButton" text="Add event" />
+                                  <MenuItem fx:id="statisticsButton" mnemonicParsing="false" onAction="#handleStatisticsButton" text="Statistics" />
                                   <MenuItem fx:id="settingsButton" mnemonicParsing="false" onAction="#handleSettingsButton" text="Settings" />
                               </items>
                               <font>

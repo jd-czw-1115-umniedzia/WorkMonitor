@@ -52,6 +52,8 @@ public class AppController {
         Scene scene = new Scene(rootLayout);
         primaryStage.setScene(scene);
         primaryStage.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::closeWindowEvent);
+        primaryStage.setMinWidth(450);
+        primaryStage.setMinHeight(450);
         primaryStage.show();
 
     }
@@ -156,6 +158,55 @@ public class AppController {
             controller.setDate(date);
             eventStage.showAndWait();
 
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void showStatisticsView(String from, String to) {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+
+            Parent page = loader.load(getClass().getResourceAsStream("/views/StatisticsView.fxml"));
+
+            Stage statisticsStage = new Stage();
+            statisticsStage.setTitle("Statistics");
+            statisticsStage.setMinHeight(250);
+            statisticsStage.setMinWidth(300);
+
+            Scene scene = new Scene(page);
+            statisticsStage.setScene(scene);
+
+            StatisticsViewController controller = loader.getController();
+            controller.setAppController(this);
+            controller.setStage(statisticsStage);
+            controller.loadData(from, to);
+            statisticsStage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void showStatisticsDialogView() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+
+            Parent page = loader.load(getClass().getResourceAsStream("/views/StatisitcsDialogView.fxml"));
+
+            Stage statisticsStage = new Stage();
+            statisticsStage.setTitle("Statistics");
+
+            Scene scene = new Scene(page);
+            statisticsStage.setScene(scene);
+
+            StatisticsDialogViewController controller = loader.getController();
+            controller.setAppController(this);
+            controller.setStage(statisticsStage);
+            statisticsStage.show();
 
         } catch (IOException e) {
             e.printStackTrace();
