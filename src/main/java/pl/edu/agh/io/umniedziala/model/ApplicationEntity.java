@@ -57,9 +57,8 @@ public class ApplicationEntity {
     public static Optional<ApplicationEntity> findByName(final String name) {
         String findByNameSql = String.format("SELECT * FROM %s WHERE %s = '%s'", TABLE_NAME, Columns.NAME, name);
 
-        ResultSet rs;
         try {
-            rs = QuerryExecutor.read(findByNameSql);
+            ResultSet rs = QuerryExecutor.read(findByNameSql);
             return returnApplication(rs);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -132,7 +131,11 @@ public class ApplicationEntity {
 
 
     private static Optional<ApplicationEntity> returnApplication(ResultSet rs) {
+
         try {
+            if (rs.isClosed())
+                return Optional.empty();
+
             return Optional.of(new ApplicationEntity(
                     rs.getInt(Columns.ID),
                     rs.getString(Columns.NAME),
