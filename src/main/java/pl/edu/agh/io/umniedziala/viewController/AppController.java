@@ -124,9 +124,7 @@ public class AppController {
         }
     }
 
-    private Boolean settingsWindowLoaded = false;
     public void showSettingsWindow() {
-        if (!settingsWindowLoaded) {
             try {
                 FXMLLoader loader = new FXMLLoader();
 
@@ -146,19 +144,13 @@ public class AppController {
                 settingsStage.show();
                 settingsStage.setAlwaysOnTop(true);
 
-                settingsWindowLoaded = true;
-                settingsStage.setOnCloseRequest((WindowEvent event) -> {  settingsWindowLoaded = false; });
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
 
     }
 
-    private Boolean eventWindowLoaded = false;
     public void showCustomEventView(Date date) {
-        if (!eventWindowLoaded) {
             try {
                 // Load the fxml file and create a new stage for the dialog
                 FXMLLoader loader = new FXMLLoader();
@@ -179,13 +171,10 @@ public class AppController {
                 eventStage.showAndWait();
                 eventStage.setAlwaysOnTop(true);
 
-                eventWindowLoaded = true;
-                eventStage.setOnCloseRequest((WindowEvent event) -> { eventWindowLoaded = false; });
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
 
     }
 
