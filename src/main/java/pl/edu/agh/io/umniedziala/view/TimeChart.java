@@ -199,17 +199,24 @@ public class TimeChart extends XYChart<Number, String> {
                 Rectangle box;
                 if (node instanceof StackPane) {
                     StackPane region = (StackPane) item.getNode();
+
+                    double boxLineHeight = lineHeight;
+                    // custom eventy są trochę mniejsze niż aktywność, żeby dało się zobaczyć aktywnośc
+                    ExtraData extra = (ExtraData) item.getExtraValue();
+                    if (extra instanceof CustomExtraData) {
+                        boxLineHeight *= 0.7;
+                    }
+
                     if (region.getShape() == null) {
-                        box = new Rectangle(((ExtraData) item.getExtraValue()).length, lineHeight);
+                        box = new Rectangle(((ExtraData) item.getExtraValue()).length, boxLineHeight);
                     } else if (region.getShape() instanceof Rectangle) {
                         box = (Rectangle) region.getShape();
                     } else {
                         return;
                     }
-                    ExtraData extra = (ExtraData) item.getExtraValue();
                     box.setWidth(extra.length * Math.abs(((NumberAxis) getXAxis()).getScale()));
-                    box.setHeight(lineHeight);
-                    y -= lineHeight / 2.0;
+                    box.setHeight(boxLineHeight);
+                    y -= boxLineHeight / 2.0;
 
                     region.setShape(null);
                     region.setShape(box);
@@ -232,7 +239,7 @@ public class TimeChart extends XYChart<Number, String> {
                                     a.setHeaderText(cextra.name);
                                     a.setTitle("Custom event");
                                     Optional<ButtonType> option = a.showAndWait();
-                                    if(option.isPresent() && option.get() == deletDis){
+                                    if (option.isPresent() && option.get() == deletDis) {
                                         try {
                                             CustomEventEntity.delete(cextra.id);
                                             cextra.length = 0; // xd. Gdyby to był kontroler to możnaby uruchomić refreshChart() ale tak w sumie jest szybciej
@@ -240,7 +247,7 @@ public class TimeChart extends XYChart<Number, String> {
                                         } catch (SQLException ex) {
                                             ex.printStackTrace();
                                             new Alert(Alert.AlertType.ERROR, "Nie udało się usunąć custom eventa: "
-                                            + ex.getMessage(), ButtonType.OK).showAndWait();
+                                                    + ex.getMessage(), ButtonType.OK).showAndWait();
                                         }
                                     }
                                 }

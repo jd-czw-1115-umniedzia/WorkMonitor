@@ -94,10 +94,9 @@ public class ActivityListener extends Thread implements NativeMouseInputListener
             System.exit(1);
         }
 
-        ActivityListener activityListener = new ActivityListener();
-        GlobalScreen.addNativeMouseListener(activityListener);
-        GlobalScreen.addNativeMouseMotionListener(activityListener);
-        GlobalScreen.addNativeKeyListener(activityListener);
+        GlobalScreen.addNativeMouseListener(this);
+        GlobalScreen.addNativeMouseMotionListener(this);
+        GlobalScreen.addNativeKeyListener(this);
 
         Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
         logger.setLevel(Level.OFF);
@@ -118,7 +117,7 @@ public class ActivityListener extends Thread implements NativeMouseInputListener
             long est = System.nanoTime() - startTime;
 
             if(est / 1e9 > inactivityDuration){
-                activityListener.setActiveAgain(false);
+                setActiveAgain(false);
                 System.out.println("INACTIVE: " + dateFormat.format(new Date()));
                 ComputerRunningPeriodEntity.update(lastRunningPeriodId, start, dateFormat.format(new Date()));
 
