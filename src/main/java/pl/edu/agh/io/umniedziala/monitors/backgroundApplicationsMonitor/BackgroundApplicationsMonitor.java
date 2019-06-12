@@ -1,17 +1,10 @@
 package pl.edu.agh.io.umniedziala.monitors.backgroundApplicationsMonitor;
 
-import com.sun.jna.platform.win32.Kernel32;
-import com.sun.jna.platform.win32.User32;
-import com.sun.jna.platform.win32.WinDef;
-import com.sun.jna.platform.win32.WinNT;
-import com.sun.jna.ptr.IntByReference;
 import pl.edu.agh.io.umniedziala.model.ApplicationEntity;
 import pl.edu.agh.io.umniedziala.model.BackgroundPeriodEntity;
 import pl.edu.agh.io.umniedziala.model.RunningPeriodEntity;
-import pl.edu.agh.io.umniedziala.monitors.WindowsFunctionHandler;
-import pl.edu.agh.io.umniedziala.monitors.activeApplicationMonitor.ActiveWindowNotFound;
+import pl.edu.agh.io.umniedziala.windowsHandlers.WindowsFunctionHandler;
 
-import java.io.OptionalDataException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
