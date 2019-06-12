@@ -77,6 +77,7 @@ public class AppController {
             ChooseApplicationController controller = loader.getController();
             controller.setAppController(this);
             controller.setStage(appStage);
+            controller.loadData();
             appStage.show();
 
         } catch (IOException e) {

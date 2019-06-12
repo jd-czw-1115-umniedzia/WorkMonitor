@@ -16,6 +16,7 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -37,6 +38,7 @@ public class ChooseColorsViewController {
     private Stage stage;
     private ObservableList<App> observableApps;
 
+    ManagingApplicationsController managingApplicationsController;
     private App changedApp;
 
 
@@ -52,9 +54,13 @@ public class ChooseColorsViewController {
     @FXML
     private ColorPicker colorPicker;
 
+    @FXML
+    private Button deleteButton;
+
 
     @FXML
     public void initialize() {
+        managingApplicationsController = new ManagingApplicationsController();
         appColorsTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         applicationColumn.setCellValueFactory(dataValue -> dataValue.getValue().nameProperty());
 
@@ -121,14 +127,22 @@ public class ChooseColorsViewController {
         changedApp.color = newColor;
     }
 
+    @FXML
+    public void handleDeleteButton(ActionEvent event){
+        if (changedApp == null) return;
+        managingApplicationsController.deleteApplication(changedApp.getPath());
+    }
+
     private class App {
         StringProperty name;
         String color;
+        String path;
         private Image image;
 
         public App(String name, String color, String path) {
             this.name = new SimpleStringProperty(name);
             this.color = color;
+            this.path = path;
             setImageByPath(path);
         }
 
@@ -152,6 +166,8 @@ public class ChooseColorsViewController {
                 this.image = new Image("file:krimit.png");
             }
         }
+
+        public String getPath() { return path; }
 
         public String getName() {
             return name.get();
