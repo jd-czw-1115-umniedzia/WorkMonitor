@@ -209,4 +209,7 @@ public class MainViewController {
         refreshTimer.cancel();
         refreshTimer = new Timer();
     }
+    public void handleStatisticsButton(ActionEvent event) {
+        appController.showStatisticsDialogView();
+    }
 }
