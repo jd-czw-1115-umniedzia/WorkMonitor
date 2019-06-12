@@ -61,6 +61,30 @@ public class AppController {
         System.exit(0);
     }
 
+    public void showAddApplicationWindow() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+
+            Parent page = loader.load(getClass().getResourceAsStream("/views/ChooseApplicationView.fxml"));
+
+            Stage appStage = new Stage();
+            appStage.setTitle("Choose application");
+            appStage.setResizable(false);
+
+            Scene scene = new Scene(page);
+            appStage.setScene(scene);
+
+            ChooseApplicationController controller = loader.getController();
+            controller.setAppController(this);
+            controller.setStage(appStage);
+            appStage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     public void showReportGenerationWindow() {
         try {
             FXMLLoader loader = new FXMLLoader();
