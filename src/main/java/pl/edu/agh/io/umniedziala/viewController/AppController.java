@@ -34,6 +34,20 @@ public class AppController {
         MainViewController controller = loader.getController();
         controller.setAppController(this);
 
+        controller.startTimechartUpdates();
+
+        // nie aktualizujemy wykresu kiedy aplikacja jest zminimalizowana
+        // i aktualizujemy regularnie (oraz natychmiast) kiedy wróci na ekran
+        this.primaryStage.iconifiedProperty().addListener((ov, t, t1) -> {
+            if(t1.booleanValue()){
+                // jest zminimalizowana
+                controller.stopTimechartUpdates();
+            } else {
+                // jest na erkanie
+                controller.startTimechartUpdates();
+            }
+        });
+
         // add layout to a scene and show them all
         Scene scene = new Scene(rootLayout);
         primaryStage.setScene(scene);
@@ -47,7 +61,7 @@ public class AppController {
         System.exit(0);
     }
 
-    public void showReportGenerationWindow(){
+    public void showReportGenerationWindow() {
         try {
             FXMLLoader loader = new FXMLLoader();
 
@@ -72,7 +86,7 @@ public class AppController {
     }
 
 
-    public void showSettingsWindow(){
+    public void showSettingsWindow() {
         try {
             FXMLLoader loader = new FXMLLoader();
 
@@ -97,7 +111,7 @@ public class AppController {
 
     }
 
-    public void showCustomEventView(Date date){
+    public void showCustomEventView(Date date) {
         try {
             // Load the fxml file and create a new stage for the dialog
             FXMLLoader loader = new FXMLLoader();

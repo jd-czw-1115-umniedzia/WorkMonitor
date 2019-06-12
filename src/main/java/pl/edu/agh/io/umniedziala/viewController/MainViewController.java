@@ -35,6 +35,7 @@ public class MainViewController {
     final FileChooser fileChooser = new FileChooser();
     ManagingApplicationsController managingApplicationsController;
     final static String DEFAULT_COLOR = "#000000";
+    private Timer refreshTimer = new Timer();
 
     private Date currentDate;
 
@@ -94,17 +95,14 @@ public class MainViewController {
         currentDate = new Date();
         date.setText(dateFormat.format(currentDate));
         managingApplicationsController = new ManagingApplicationsController();
-
-        startTimechartUpdates();
     }
 
-    private void startTimechartUpdates() {
+    public void startTimechartUpdates() {
         // Nasz timechart jest szeroki a bazę aktualizujemy często. Nie ma chyba potrzeby, żeby aktualizować
         // wykresy przy każdej zmianie w bazie. Uruchamiam tutaj timer, który co kilka minut aktualizuje wykres.
 
-        long repeatTime = 1 * 15 * 1000; // w milisekundach
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
+        long repeatTime = 1 * 1 * 1000; // w milisekundach
+        refreshTimer.schedule(new TimerTask() {
             @Override
             public void run() {
                 Platform.runLater(() -> refreshChart() );
@@ -207,4 +205,8 @@ public class MainViewController {
         refreshChart();
     }
 
+    public void stopTimechartUpdates() {
+        refreshTimer.cancel();
+        refreshTimer = new Timer();
+    }
 }
