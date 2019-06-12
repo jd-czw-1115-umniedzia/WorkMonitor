@@ -6,11 +6,10 @@ import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import pl.edu.agh.io.umniedziala.model.CustomEventEntity;
-import pl.edu.agh.io.umniedziala.view.DateTimePicker;
-import sun.java2d.pipe.SpanShapeRenderer;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 public class CustomEventController {
 
@@ -18,8 +17,7 @@ public class CustomEventController {
     private Stage stage;
 
     Boolean nameInserted;
-    Boolean startTimeInserted;
-    Boolean endTimeInserted;
+    Date date;
 
     @FXML
     private Label alert;
@@ -37,10 +35,10 @@ public class CustomEventController {
     private Button saveButton;
 
     @FXML
-    private DateTimePicker startTime;
+    private TextField startTime;
 
     @FXML
-    private DateTimePicker endTime;
+    private TextField endTime;
 
     public void setAppController(AppController appController) {
         this.appController = appController;
@@ -53,28 +51,24 @@ public class CustomEventController {
     @FXML
     public void initialize(){
         nameInserted=false;
-        startTimeInserted=false;
-        endTimeInserted=false;
+        startTime.setText("08:00:00");
+        endTime.setText("16:00:00");
     }
 
-
-    @FXML
-    public void startTimeHandler(ActionEvent event){
-        startTimeInserted=true;
-    }
-
-    @FXML
-    public void endTimeHandler(ActionEvent event){
-        endTimeInserted=true;
+    public void setDate(Date date){
+        this.date = date;
     }
 
     @FXML
     public void handleSaveButton(ActionEvent event) {
         nameInserted = !nameInput.getText().isEmpty();
-        if (nameInserted && startTimeInserted && endTimeInserted) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            String start = startTime.getDateTimeValue().format(formatter);
-            String end = endTime.getDateTimeValue().format(formatter);
+        if (nameInserted) {
+            DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            String start = startTime.getText();
+            String end = endTime.getText();
+            String dateOfEvent = formatter.format(date);
+            start = dateOfEvent+" "+start;
+            end = dateOfEvent+" "+end;
             Color color = colorPicker.getValue();
             String resultColor = String.format("#%02X%02X%02X",
                     (int)(color.getRed()*255),

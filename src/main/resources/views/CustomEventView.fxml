@@ -9,9 +9,8 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
-<?import pl.edu.agh.io.umniedziala.view.DateTimePicker?>
 
-<AnchorPane maxHeight="431.0" maxWidth="373.0" minHeight="431.0" minWidth="373.0" prefHeight="431.0" prefWidth="373.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.edu.agh.io.umniedziala.viewController.CustomEventController">
+<AnchorPane maxHeight="431.0" maxWidth="373.0" minHeight="431.0" minWidth="373.0" prefHeight="431.0" prefWidth="373.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.edu.agh.io.umniedziala.viewController.CustomEventController">
    <children>
       <Pane layoutX="-2.0" layoutY="-1.0" prefHeight="65.0" prefWidth="379.0" style="-fx-background-color: #436791 #436791;">
          <children>
@@ -66,11 +65,17 @@
          <font>
             <Font name="Trebuchet MS" size="15.0" />
          </font></TextArea>
-      <DateTimePicker fx:id="startTime" layoutX="117.0" layoutY="130.0" onAction="#startTimeHandler" />
-       <DateTimePicker fx:id="endTime" layoutX="117.0" layoutY="175.0" onAction="#endTimeHandler" />
       <Label fx:id="alert" layoutX="72.0" layoutY="357.0" textFill="RED">
          <font>
             <Font name="Trebuchet MS" size="14.0" />
          </font></Label>
+      <TextField fx:id="startTime" layoutX="117.0" layoutY="131.0" prefHeight="27.0" prefWidth="102.0">
+         <font>
+            <Font name="Trebuchet MS" size="15.0" />
+         </font></TextField>
+      <TextField fx:id="endTime" layoutX="117.0" layoutY="177.0" prefHeight="27.0" prefWidth="102.0">
+         <font>
+            <Font name="Trebuchet MS" size="15.0" />
+         </font></TextField>
    </children>
 </AnchorPane>

@@ -35,7 +35,7 @@
                <bottom>
                   <HBox alignment="TOP_CENTER" style="-fx-background-color: #436791" BorderPane.alignment="CENTER">
                      <children>
-                        <ImageView fx:id="left_date" fitHeight="24.0" fitWidth="24.0" onMouseClicked="#handle_left_date" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="left_date" fitHeight="24.0" fitWidth="24.0" onMouseClicked="#handleLeftDate" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="/images/left.jpg" />
                            </image>
@@ -48,7 +48,7 @@
                               <Font name="Trebuchet MS" size="17.0" />
                            </font>
                         </Text>
-                        <ImageView fx:id="right_date" fitHeight="27.0" fitWidth="24.0" onMouseClicked="#handle_right_date" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="right_date" fitHeight="27.0" fitWidth="24.0" onMouseClicked="#handleRightDate" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="/images/right.jpg" />
                            </image>

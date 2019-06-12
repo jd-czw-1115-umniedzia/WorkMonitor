@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 import java.io.IOException;
+import java.util.Date;
 
 public class AppController {
     private Stage primaryStage;
@@ -43,7 +44,6 @@ public class AppController {
 
     private void closeWindowEvent(WindowEvent event) {
         System.out.println("Window close request ...");
-        //TODO: tu obsługa wydarzeń przed zamknięciem apki
         System.exit(0);
     }
 
@@ -97,7 +97,7 @@ public class AppController {
 
     }
 
-    public void showCustomEventView(){
+    public void showCustomEventView(Date date){
         try {
             // Load the fxml file and create a new stage for the dialog
             FXMLLoader loader = new FXMLLoader();
@@ -114,6 +114,7 @@ public class AppController {
             CustomEventController controller = loader.getController();
             controller.setAppController(this);
             controller.setStage(eventStage);
+            controller.setDate(date);
             eventStage.show();
 
 

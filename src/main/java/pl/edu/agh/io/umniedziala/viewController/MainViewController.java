@@ -144,7 +144,7 @@ public class MainViewController {
     }
 
     @FXML
-    public void handle_left_date(MouseEvent event) throws ParseException, SQLException {
+    public void handleLeftDate(MouseEvent event) throws ParseException, SQLException {
         Calendar cal = Calendar.getInstance();
         cal.setTime(currentDate);
         cal.add(Calendar.DATE, -1);
@@ -155,12 +155,12 @@ public class MainViewController {
     }
 
     @FXML
-    public void handle_right_date(MouseEvent event) throws ParseException, SQLException {
+    public void handleRightDate(MouseEvent event) throws ParseException, SQLException {
         Calendar cal = Calendar.getInstance();
         cal.setTime(currentDate);
         Date today = new Date();
-        String today_text = dateFormat.format(today);
-        today = dateFormat.parse(today_text);
+        String todayText = dateFormat.format(today);
+        today = dateFormat.parse(todayText);
         if (currentDate.compareTo(today) < 0) {
             cal.add(Calendar.DATE, 1);
             currentDate.setTime(cal.getTimeInMillis());
@@ -200,7 +200,7 @@ public class MainViewController {
 
     @FXML
     public void handleEventButton(ActionEvent event) {
-        appController.showCustomEventView();
+        appController.showCustomEventView(currentDate);
     }
 
 }
