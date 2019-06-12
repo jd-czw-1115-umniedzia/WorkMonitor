@@ -3,7 +3,9 @@ package pl.edu.agh.io.umniedziala;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import pl.edu.agh.io.umniedziala.configuration.Configuration;
+import pl.edu.agh.io.umniedziala.model.ApplicationEntity;
 import pl.edu.agh.io.umniedziala.monitors.activeApplicationMonitor.ActiveApplicationListener;
+import pl.edu.agh.io.umniedziala.monitors.backgroundApplicationsMonitor.BackgroundApplicationsMonitor;
 import pl.edu.agh.io.umniedziala.monitors.compuerMonitor.ActivityListener;
 import pl.edu.agh.io.umniedziala.viewController.AppController;
 
@@ -27,6 +29,8 @@ public class Main extends Application {
 
         ActivityListener activityListener = new ActivityListener();
         activityListener.start();
+
+        new BackgroundApplicationsMonitor(2000).start();
 
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("WorkMonitor");

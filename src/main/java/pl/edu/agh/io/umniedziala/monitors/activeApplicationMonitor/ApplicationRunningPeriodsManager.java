@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Optional;
 
 public class ApplicationRunningPeriodsManager {
 
@@ -49,7 +50,13 @@ public class ApplicationRunningPeriodsManager {
 
         int applicationId = ApplicationEntity.findByName(lastApplicationCheckedName).get().getId();
 
-        lastRunningPeriodId = RunningPeriodEntity.create(startTime, startTime, applicationId).get().getId();
+        // added because a bug with db
+        Optional<RunningPeriodEntity> lrpi = RunningPeriodEntity.create(startTime, startTime, applicationId);
+        if (lrpi.isPresent()) {
+            lastRunningPeriodId = lrpi.get().getId();
+        } else {
+            lastApplicationCheckedName = null;
+        }
     }
 
     private void updateRunningPeriodInDatabase() {
