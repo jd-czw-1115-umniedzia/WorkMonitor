@@ -74,8 +74,13 @@ public class CustomEventController {
                     (int)(color.getRed()*255),
                     (int)(color.getGreen()*255),
                     (int)(color.getBlue()*255));
-            CustomEventEntity.create(start, end, nameInput.getText(), descriptionInput.getText(), resultColor);
-            stage.close();
+
+            if(end.compareTo(start) < 0){
+                alert.setText("Incorrect start time and end time");
+            } else {
+                CustomEventEntity.create(start, end, nameInput.getText(), descriptionInput.getText(), resultColor);
+                stage.close();
+            }
         } else {
             alert.setText("Choose start time, end time and name!");
         }
