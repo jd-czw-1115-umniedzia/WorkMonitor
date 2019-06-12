@@ -63,153 +63,192 @@ public class AppController {
         System.exit(0);
     }
 
+    private Boolean appWindowLoaded = false;
     public void showAddApplicationWindow() {
-        try {
-            FXMLLoader loader = new FXMLLoader();
+        if (!appWindowLoaded) {
+            try {
+                FXMLLoader loader = new FXMLLoader();
 
-            Parent page = loader.load(getClass().getResourceAsStream("/views/ChooseApplicationView.fxml"));
+                Parent page = loader.load(getClass().getResourceAsStream("/views/ChooseApplicationView.fxml"));
 
-            Stage appStage = new Stage();
-            appStage.setTitle("Choose application");
-            appStage.setResizable(false);
+                Stage appStage = new Stage();
+                appStage.setTitle("Choose application");
+                appStage.setResizable(false);
 
-            Scene scene = new Scene(page);
-            appStage.setScene(scene);
+                Scene scene = new Scene(page);
+                appStage.setScene(scene);
 
-            ChooseApplicationController controller = loader.getController();
-            controller.setAppController(this);
-            controller.setStage(appStage);
-            controller.loadData();
-            appStage.show();
+                ChooseApplicationController controller = loader.getController();
+                controller.setAppController(this);
+                controller.setStage(appStage);
+                controller.loadData();
+                appStage.show();
+                appStage.setAlwaysOnTop(true);
 
-        } catch (IOException e) {
-            e.printStackTrace();
+                appWindowLoaded = true;
+                appStage.setOnCloseRequest((WindowEvent event) -> { appWindowLoaded = false; });
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-
     }
 
+    private Boolean reportWindowLoaded = false;
     public void showReportGenerationWindow() {
-        try {
-            FXMLLoader loader = new FXMLLoader();
+        if (!reportWindowLoaded) {
+            try {
+                FXMLLoader loader = new FXMLLoader();
 
-            Parent page = loader.load(getClass().getResourceAsStream("/views/ReportGenerationView.fxml"));
+                Parent page = loader.load(getClass().getResourceAsStream("/views/ReportGenerationView.fxml"));
 
-            Stage reportStage = new Stage();
-            reportStage.setTitle("Report Generation");
-            reportStage.setResizable(false);
+                Stage reportStage = new Stage();
+                reportStage.setTitle("Report Generation");
+                reportStage.setResizable(false);
 
-            Scene scene = new Scene(page);
-            reportStage.setScene(scene);
+                Scene scene = new Scene(page);
+                reportStage.setScene(scene);
 
-            ReportGenerationViewController controller = loader.getController();
-            controller.setAppController(this);
-            controller.setStage(reportStage);
-            reportStage.show();
+                ReportGenerationViewController controller = loader.getController();
+                controller.setAppController(this);
+                controller.setStage(reportStage);
+                reportStage.show();
+                reportStage.setAlwaysOnTop(true);
 
-        } catch (IOException e) {
-            e.printStackTrace();
+                reportWindowLoaded = true;
+                reportStage.setOnCloseRequest((WindowEvent event) -> { reportWindowLoaded = false; });
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-
     }
 
-
+    private Boolean settingsWindowLoaded = false;
     public void showSettingsWindow() {
-        try {
-            FXMLLoader loader = new FXMLLoader();
+        if (!settingsWindowLoaded) {
+            try {
+                FXMLLoader loader = new FXMLLoader();
 
-            Parent page = loader.load(getClass().getResourceAsStream("/views/SettingsView.fxml"));
+                Parent page = loader.load(getClass().getResourceAsStream("/views/SettingsView.fxml"));
 
-            Stage settingsStage = new Stage();
-            settingsStage.setTitle("Settings");
-            settingsStage.setResizable(false);
+                Stage settingsStage = new Stage();
+                settingsStage.setTitle("Settings");
+                settingsStage.setResizable(false);
 
-            Scene scene = new Scene(page);
-            settingsStage.setScene(scene);
+                Scene scene = new Scene(page);
+                settingsStage.setScene(scene);
 
-            SettingsViewController controller = loader.getController();
-            controller.setAppController(this);
-            controller.setStage(settingsStage);
-            controller.loadData();
-            settingsStage.show();
+                SettingsViewController controller = loader.getController();
+                controller.setAppController(this);
+                controller.setStage(settingsStage);
+                controller.loadData();
+                settingsStage.show();
+                settingsStage.setAlwaysOnTop(true);
 
-        } catch (IOException e) {
-            e.printStackTrace();
+                settingsWindowLoaded = true;
+                settingsStage.setOnCloseRequest((WindowEvent event) -> {  settingsWindowLoaded = false; });
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
     }
 
+    private Boolean eventWindowLoaded = false;
     public void showCustomEventView(Date date) {
-        try {
-            // Load the fxml file and create a new stage for the dialog
-            FXMLLoader loader = new FXMLLoader();
+        if (!eventWindowLoaded) {
+            try {
+                // Load the fxml file and create a new stage for the dialog
+                FXMLLoader loader = new FXMLLoader();
 
-            Parent page = loader.load(getClass().getResourceAsStream("/views/CustomEventView.fxml"));
+                Parent page = loader.load(getClass().getResourceAsStream("/views/CustomEventView.fxml"));
 
-            // Create the dialog Stage.
-            Stage eventStage = new Stage();
-            eventStage.setTitle("Custom event");
-            eventStage.setResizable(false);
-            Scene scene = new Scene(page);
-            eventStage.setScene(scene);
+                // Create the dialog Stage.
+                Stage eventStage = new Stage();
+                eventStage.setTitle("Custom event");
+                eventStage.setResizable(false);
+                Scene scene = new Scene(page);
+                eventStage.setScene(scene);
 
-            CustomEventController controller = loader.getController();
-            controller.setAppController(this);
-            controller.setStage(eventStage);
-            controller.setDate(date);
-            eventStage.showAndWait();
+                CustomEventController controller = loader.getController();
+                controller.setAppController(this);
+                controller.setStage(eventStage);
+                controller.setDate(date);
+                eventStage.showAndWait();
+                eventStage.setAlwaysOnTop(true);
 
+                eventWindowLoaded = true;
+                eventStage.setOnCloseRequest((WindowEvent event) -> { eventWindowLoaded = false; });
 
-        } catch (IOException e) {
-            e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
     }
 
+    private Boolean statisticsWindowLoaded = false;
     public void showStatisticsView(String from, String to) {
-        try {
-            FXMLLoader loader = new FXMLLoader();
+        if (!statisticsWindowLoaded) {
+            try {
+                FXMLLoader loader = new FXMLLoader();
 
-            Parent page = loader.load(getClass().getResourceAsStream("/views/StatisticsView.fxml"));
+                Parent page = loader.load(getClass().getResourceAsStream("/views/StatisticsView.fxml"));
 
-            Stage statisticsStage = new Stage();
-            statisticsStage.setTitle("Statistics");
-            statisticsStage.setMinHeight(250);
-            statisticsStage.setMinWidth(300);
+                Stage statisticsStage = new Stage();
+                statisticsStage.setTitle("Statistics");
+                statisticsStage.setMinHeight(250);
+                statisticsStage.setMinWidth(300);
 
-            Scene scene = new Scene(page);
-            statisticsStage.setScene(scene);
+                Scene scene = new Scene(page);
+                statisticsStage.setScene(scene);
 
-            StatisticsViewController controller = loader.getController();
-            controller.setAppController(this);
-            controller.setStage(statisticsStage);
-            controller.loadData(from, to);
-            statisticsStage.show();
+                StatisticsViewController controller = loader.getController();
+                controller.setAppController(this);
+                controller.setStage(statisticsStage);
+                controller.loadData(from, to);
+                statisticsStage.show();
+                statisticsStage.setAlwaysOnTop(true);
 
-        } catch (IOException e) {
-            e.printStackTrace();
+                statisticsWindowLoaded = true;
+                statisticsStage.setOnCloseRequest((WindowEvent event) -> { statisticsWindowLoaded = false;
+                statDialogWindowLoaded = false; });
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
     }
 
+    private Boolean statDialogWindowLoaded = false;
     public void showStatisticsDialogView() {
-        try {
-            FXMLLoader loader = new FXMLLoader();
+        if (!statDialogWindowLoaded) {
+            try {
+                FXMLLoader loader = new FXMLLoader();
 
-            Parent page = loader.load(getClass().getResourceAsStream("/views/StatisitcsDialogView.fxml"));
+                Parent page = loader.load(getClass().getResourceAsStream("/views/StatisitcsDialogView.fxml"));
 
-            Stage statisticsStage = new Stage();
-            statisticsStage.setTitle("Statistics");
+                Stage statisticsStage = new Stage();
+                statisticsStage.setTitle("Statistics");
 
-            Scene scene = new Scene(page);
-            statisticsStage.setScene(scene);
+                Scene scene = new Scene(page);
+                statisticsStage.setScene(scene);
 
-            StatisticsDialogViewController controller = loader.getController();
-            controller.setAppController(this);
-            controller.setStage(statisticsStage);
-            statisticsStage.show();
+                StatisticsDialogViewController controller = loader.getController();
+                controller.setAppController(this);
+                controller.setStage(statisticsStage);
+                statisticsStage.show();
+                statisticsStage.setAlwaysOnTop(true);
 
-        } catch (IOException e) {
-            e.printStackTrace();
+                statDialogWindowLoaded = true;
+                statisticsStage.setOnCloseRequest((WindowEvent event) -> { statDialogWindowLoaded = false; });
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
     }

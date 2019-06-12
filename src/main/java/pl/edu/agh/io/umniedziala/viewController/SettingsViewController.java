@@ -14,6 +14,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import pl.edu.agh.io.umniedziala.configuration.Configuration;
 
 import java.io.IOException;
@@ -27,6 +28,7 @@ public class SettingsViewController {
     private Long activityTime;
     private int chartStart;
     private int chartEnd;
+
 
     @FXML
     private TextField chartStartField;
@@ -114,9 +116,11 @@ public class SettingsViewController {
             controller.setStage(colorsStage);
             controller.loadData();
             colorsStage.show();
+            colorsStage.setAlwaysOnTop(true);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 }
