@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class BackgroundPeriodEntity extends Period {
+public class BackgroundPeriodEntity extends AppPeriod {
 
     public static final String TABLE_NAME = "background_period";
 
@@ -84,18 +84,16 @@ public class BackgroundPeriodEntity extends Period {
         return Optional.empty();
     }
 
-    public static List<BackgroundPeriodEntity> findByStartDate(final String startDate, final String appName) {
+    public static List<BackgroundPeriodEntity> findByStartDate(final String startDate) {
         String findByStartDateSql = String.format(
                 "SELECT * FROM %s " +
                         "INNER JOIN %s ON %s.%s = %s.%s " +
-                        "WHERE %s >= Datetime('%s 00:00:00') and %s <= Datetime('%s 23:59:59') " +
-                        "and %s = '%s'"
+                        "WHERE %s >= Datetime('%s 00:00:00') and %s <= Datetime('%s 23:59:59') "
                 , TABLE_NAME
                 , ApplicationEntity.TABLE_NAME, ApplicationEntity.TABLE_NAME, ApplicationEntity.Columns.ID
                 , TABLE_NAME, Columns.APPLICATION_ID
                 , Columns.START_TIME, startDate
                 , Columns.START_TIME, startDate
-                , ApplicationEntity.Columns.NAME, appName
         );
 
         Optional<ResultSet> rs = Optional.empty();
@@ -143,9 +141,11 @@ public class BackgroundPeriodEntity extends Period {
     }
 
 
+    @Override
     public int getApplicationId() {
         return applicationId;
     }
+
     @Override
     public String getColor() {
         // grey color

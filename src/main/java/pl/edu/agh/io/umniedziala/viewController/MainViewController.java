@@ -18,10 +18,7 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import pl.edu.agh.io.umniedziala.databaseUtilities.QuerryExecutor;
-import pl.edu.agh.io.umniedziala.model.ComputerRunningPeriodEntity;
-import pl.edu.agh.io.umniedziala.model.CustomEventEntity;
-import pl.edu.agh.io.umniedziala.model.Period;
-import pl.edu.agh.io.umniedziala.model.RunningPeriodEntity;
+import pl.edu.agh.io.umniedziala.model.*;
 import pl.edu.agh.io.umniedziala.view.TimeChart;
 import sun.java2d.pipe.SpanShapeRenderer;
 
@@ -110,17 +107,21 @@ public class MainViewController {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                Platform.runLater(() -> {
-                    try {
-                        addTrackedAppsToTimechart();
-                        loadExistingDataToTimechart(currentDate);
-                    } catch (SQLException e) {
-                        // TODO jakiś ładny alert
-                        e.printStackTrace();
-                    }
-                });
+                Platform.runLater(() -> refreshChart() );
             }
         }, 0, repeatTime);
+    }
+
+    public void refreshChart() {
+        try {
+            addTrackedAppsToTimechart();
+            loadExistingDataToTimechart(currentDate);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Alert a = new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK);
+            a.setTitle("Błąd połączenia z bazą");
+            a.showAndWait();
+        }
     }
 
     public void setAppController(AppController appController) {
@@ -130,13 +131,15 @@ public class MainViewController {
     private void loadExistingDataToTimechart(Date date) throws SQLException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String sDate = sdf.format(date);
-        List<Period> results = QuerryExecutor.getPeriodsForDay(date);
+        List<Period> results = new ArrayList<>();
+        results.addAll(BackgroundPeriodEntity.findByStartDate(sDate));
+        results.addAll(QuerryExecutor.getPeriodsForDay(date));
         results.addAll(ComputerRunningPeriodEntity.findByStartDate(sDate));
         results.addAll(CustomEventEntity.findByStartDate(sDate));
         activity_chart.setDataByResults(results);
     }
 
-    public void addTrackedAppsToTimechart() throws SQLException {
+    private void addTrackedAppsToTimechart() throws SQLException {
         Map<Integer, String> appNames = QuerryExecutor.getAppNames();
         appNames.put(0, "ACTIVITY");
         app_axis.setCategories(FXCollections.observableArrayList(appNames.values()));
@@ -172,14 +175,14 @@ public class MainViewController {
 
     @FXML
     public void handleAppButton(ActionEvent event) {
-        List<File> list =
-                fileChooser.showOpenMultipleDialog(new Stage());
-        if (list != null) {
-            if (!list.isEmpty()) {
-                for (File file : list) {
-                    managingApplicationsController.addNewApplicationByPath(file.getAbsolutePath(), DEFAULT_COLOR);
-                }
+        File file = fileChooser.showOpenDialog(new Stage());
+        if (file != null) {
+            if (managingApplicationsController.addNewApplicationByPath(file.getAbsolutePath(), DEFAULT_COLOR)) {
+                new Alert(Alert.AlertType.INFORMATION, "Dodano", ButtonType.OK).showAndWait();
+            } else {
+                new Alert(Alert.AlertType.WARNING, "Nie udało się dodać aplikacji", ButtonType.OK).showAndWait();
             }
+            refreshChart();
         }
     }
 
@@ -189,7 +192,7 @@ public class MainViewController {
     }
 
     @FXML
-    public void handleSettingsButton(ActionEvent event){
+    public void handleSettingsButton(ActionEvent event) {
         appController.showSettingsWindow();
     }
 
@@ -201,6 +204,7 @@ public class MainViewController {
     @FXML
     public void handleEventButton(ActionEvent event) {
         appController.showCustomEventView(currentDate);
+        refreshChart();
     }
 
 }

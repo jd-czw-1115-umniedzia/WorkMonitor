@@ -115,7 +115,7 @@ public class AppController {
             controller.setAppController(this);
             controller.setStage(eventStage);
             controller.setDate(date);
-            eventStage.show();
+            eventStage.showAndWait();
 
 
         } catch (IOException e) {
