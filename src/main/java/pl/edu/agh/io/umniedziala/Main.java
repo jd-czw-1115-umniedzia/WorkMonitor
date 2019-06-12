@@ -3,7 +3,9 @@ package pl.edu.agh.io.umniedziala;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import pl.edu.agh.io.umniedziala.configuration.Configuration;
+import pl.edu.agh.io.umniedziala.model.ApplicationEntity;
 import pl.edu.agh.io.umniedziala.monitors.activeApplicationMonitor.ActiveApplicationListener;
+import pl.edu.agh.io.umniedziala.monitors.backgroundApplicationsMonitor.BackgroundApplicationsMonitor;
 import pl.edu.agh.io.umniedziala.monitors.compuerMonitor.ActivityListener;
 import pl.edu.agh.io.umniedziala.viewController.AppController;
 
@@ -19,6 +21,13 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
+        this.primaryStage = primaryStage;
+        this.primaryStage.setTitle("WorkMonitor");
+        this.primaryStage.setOnCloseRequest(event -> activeApplicationListener.stopListening());
+
+        this.appController = new AppController(primaryStage);
+        this.appController.initRootLayout();
+
         activeApplicationListener =
                 new ActiveApplicationListener(
                         Configuration.getInstance().getCheckInterval().intValue()
@@ -28,16 +37,13 @@ public class Main extends Application {
         ActivityListener activityListener = new ActivityListener();
         activityListener.start();
 
-        this.primaryStage = primaryStage;
-        this.primaryStage.setTitle("WorkMonitor");
-        this.primaryStage.setOnCloseRequest(event -> activeApplicationListener.stopListening());
-
-        this.appController = new AppController(primaryStage);
-        this.appController.initRootLayout();
+        new BackgroundApplicationsMonitor(2000).start();
     }
 
     public static void main(String[] args) {
-        launch(args);
+        //launch(args);
+
+        ApplicationEntity.create("jebacdisa", "C:/ds/sda/chd", "#000000");
     }
 }
 

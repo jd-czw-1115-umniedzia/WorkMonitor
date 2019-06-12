@@ -2,6 +2,7 @@ package pl.edu.agh.io.umniedziala.monitors.backgroundApplicationsMonitor;
 
 import pl.edu.agh.io.umniedziala.model.ApplicationEntity;
 import pl.edu.agh.io.umniedziala.model.BackgroundPeriodEntity;
+import pl.edu.agh.io.umniedziala.model.Period;
 import pl.edu.agh.io.umniedziala.model.RunningPeriodEntity;
 import pl.edu.agh.io.umniedziala.windowsHandlers.WindowsFunctionHandler;
 
@@ -32,7 +33,10 @@ public class BackgroundApplicationsMonitor extends Thread {
         applicationEntityList = ApplicationEntity.getAllApplications();
         for(ApplicationEntity applicationEntity : applicationEntityList){
             String start = dateFormat.format(new Date());
-            int id = BackgroundPeriodEntity.create(start,start,applicationEntity.getId()).get().getId();
+
+            int id;
+            Optional<BackgroundPeriodEntity> bpe = BackgroundPeriodEntity.create(start, start, applicationEntity.getId());
+            id = bpe.map(Period::getId).orElseGet(() -> BackgroundPeriodEntity.findByStartDate(start).lastIndexOf(start));
             entitiesMap.put(applicationEntity.getId(), id);
         }
     }
