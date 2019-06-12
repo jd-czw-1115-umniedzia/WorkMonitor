@@ -114,7 +114,7 @@ public class BasicReport {
             }
         }
 
-        appWithTimes.forEach((x,y) -> System.out.println(x + ": " + y));
+       // appWithTimes.forEach((x,y) -> System.out.println(x + ": " + y));
         return appWithTimes;
 
     }
