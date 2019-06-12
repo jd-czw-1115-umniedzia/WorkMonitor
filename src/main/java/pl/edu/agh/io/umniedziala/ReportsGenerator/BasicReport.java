@@ -3,7 +3,9 @@ package pl.edu.agh.io.umniedziala.ReportsGenerator;
 import com.opencsv.CSVWriter;
 
 import javafx.util.Pair;
-import pl.edu.agh.io.umniedziala.model.ReportEntryEntity;
+import pl.edu.agh.io.umniedziala.databaseUtilities.QuerryExecutor;
+import pl.edu.agh.io.umniedziala.model.*;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -12,6 +14,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import static java.util.stream.Collectors.*;
@@ -58,11 +61,68 @@ public class BasicReport {
         fileOperator.close();
     }
 
+    public Map<Integer,Double> findActiveTime(Date date){
 
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+//        Date date = Date.from(day.atStartOfDay().atZone(ZoneId.systemDefault())
+//                .toInstant());
+
+        String sDate = sdf.format(date);
+
+        List<Period> results = new ArrayList<>();
+        results.addAll(BackgroundPeriodEntity.findByStartDate(sDate));
+        try {
+            results.addAll(QuerryExecutor.getPeriodsForDay(date));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        results.addAll(ComputerRunningPeriodEntity.findByStartDate(sDate));
+        results.addAll(CustomEventEntity.findByStartDate(sDate));
+
+        SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat utc_sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        utc_sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Map<Integer, Double> appWithTimes = new HashMap<>();
+        System.out.println(results.isEmpty());
+        for (Period ent : results) {
+            int seriesId = 0;
+            if (ent instanceof AppPeriod)
+                seriesId = ((AppPeriod) ent).getApplicationId();
+            Integer idI = new Integer(seriesId);
+            Double start = 0.0;
+            Date startDate = null;
+            Double length = 1.0;
+            Double tmp = 0.0;
+            try {
+                Double end = (double) utc_sdf.parse(ent.getEndTime()).getTime() % 86400000 / 1000.0;
+                startDate = sdf1.parse(ent.getStartTime());
+                start = (double) utc_sdf.parse(ent.getStartTime()).getTime() % 86400000 / 1000.0;
+                length = end - start; // czas w sekundach
+            } catch (ParseException e) {
+                e.printStackTrace();
+
+            }
+            start /= 3600.0;
+            length /= 3600.0;
+
+            if(!appWithTimes.containsKey(idI)){
+                appWithTimes.put(idI,length);
+            }else{
+                tmp = appWithTimes.get(idI);
+                tmp += length;
+                appWithTimes.replace(idI,tmp);
+            }
+        }
+
+       // appWithTimes.forEach((x,y) -> System.out.println(x + ": " + y));
+        return appWithTimes;
+
+    }
 
     public void getReportWithoutApps(String from, String to){
 
         TreeMap<Date,Pair<Date,Date>> timeIntervals = new TreeMap<>();
+        TreeMap<Date,Double> activeTimeIntervals = new TreeMap<>();
 
         fileOperator.writeDateRangeOfReport(from, to);
         fileOperator.writeMetadata(String.format(basicHeader).split(","));
@@ -73,6 +133,10 @@ public class BasicReport {
                         .collect(groupingBy(ReportEntryEntity::getDate,toList()));
 
         for(Map.Entry<Date,List<ReportEntryEntity>> e : entitiesGroupedByDate.entrySet()){
+
+            Map<Integer, Double> apps = findActiveTime(e.getKey());
+            double totalTime = 0.0;
+            totalTime = apps.values().stream().reduce(0.0,Double::sum);
 
             ArrayList<Date> startTimes = new ArrayList();
             ArrayList<Date> endTimes = new ArrayList();
@@ -85,18 +149,24 @@ public class BasicReport {
             Date end = Collections.max(endTimes);
 
             timeIntervals.put(e.getKey(),new Pair<>(start,end));
+            activeTimeIntervals.put(e.getKey(),totalTime);
+
         }
-        fileOperator.writeToFile(formatReportWithoutApps(timeIntervals));
+        fileOperator.writeToFile(formatReportWithoutApps(timeIntervals,activeTimeIntervals));
     }
 
     public void getReportWithApps(String from, String to){
 
         TreeMap<Date, DayEntry> appsTimeIntervals = new TreeMap<>();
 
+
         fileOperator.writeDateRangeOfReport(from, to);
         fileOperator.writeMetadata(String.format(extendedHeader).split(","));
 
         List<ReportEntryEntity> entities = parseResultSet(ReportEntryEntity.getReportEntries(from,to));
+
+        //findActiveTime();
+
         Map<Date,List<ReportEntryEntity>> entitiesGroupedByDate =
                 entities.stream()
                         .collect(groupingBy(ReportEntryEntity::getDate,toList()));
@@ -125,7 +195,7 @@ public class BasicReport {
         fileOperator.writeToFile(formatReportWithAppps(appsTimeIntervals));
     }
 
-    private List<String> formatReportWithoutApps(Map<Date,Pair<Date,Date>> entries){
+    private List<String> formatReportWithoutApps(Map<Date,Pair<Date,Date>> entries, Map<Date,Double> active){
 
         List<String> timeIntervalsStrings = new ArrayList<>();
 
@@ -134,7 +204,8 @@ public class BasicReport {
             timeIntervalsStrings.add(String.format("%s#%s#%s#%.1f",dateFormat.format(s.getKey()),
                     timeFormat.format(s.getValue().getKey()),
                     timeFormat.format(s.getValue().getValue()),
-                    findTimeDiff(s.getValue().getKey(),s.getValue().getValue())/60)
+                    //findTimeDiff(s.getValue().getKey(),s.getValue().getValue())/60)
+                    active.get(s.getKey()))
                     .replace(',','.'));
         }
         return timeIntervalsStrings;
@@ -170,6 +241,7 @@ public class BasicReport {
             while(result.next()){
                 ReportEntryEntity tmp = new ReportEntryEntity();
 
+                tmp.setId(result.getInt("id"));
                 tmp.setApplicationName(result.getString(result.findColumn("name")));
                 tmp.setDate(dateFormat.parse(result.getString(result.findColumn("start_time")).split(" ")[0]));
                 tmp.setStartTime(timeFormat.parse(result.getString(result.findColumn("start_time")).split(" ")[1]));

@@ -13,6 +13,7 @@ public class ReportEntryEntity {
     private Date date;
     private Date startTime;
     private Date endTime;
+    private int id;
 
 
     public ReportEntryEntity() {}
@@ -20,7 +21,7 @@ public class ReportEntryEntity {
     public static ResultSet getReportEntries(String from, String to){
         ResultSet result = null;
         try {
-             result = QuerryExecutor.read(String.format("SELECT name, end_time, start_time FROM application join running_period " +
+             result = QuerryExecutor.read(String.format("SELECT application.id, name, end_time, start_time FROM application join running_period " +
                      "on application.id = running_period.application_id " +
                      "where DATE(start_time) >= '%s' and Date(end_time) <= '%s'",from,to));
              return result;
@@ -62,4 +63,7 @@ public class ReportEntryEntity {
         this.endTime = endTime;
     }
 
+    public int getId() {return id; }
+
+    public void setId(int id) { this.id = id; }
 }
