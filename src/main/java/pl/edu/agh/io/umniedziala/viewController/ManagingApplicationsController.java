@@ -18,10 +18,14 @@ public class ManagingApplicationsController {
         } else {
             String appName = path.split("\\\\")[path.split("\\\\").length - 1];
 
-            ApplicationEntity.create(appName, path, color);
-            logger.info(String.format("Added %s with path: %s", appName, path));
-
-            return true;
+            if (ApplicationEntity.findByName(appName).isPresent()) {
+                logger.info("This application is already added: " + appName);
+                return false;
+            } else {
+                ApplicationEntity.create(appName, path, color);
+                logger.info(String.format("Added %s with path: %s", appName, path));
+                return true;
+            }
         }
     }
 
