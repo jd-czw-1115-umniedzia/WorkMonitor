@@ -1,5 +1,6 @@
 package pl.edu.agh.io.umniedziala.monitors.activeApplicationMonitor;
 
+import pl.edu.agh.io.umniedziala.configuration.Configuration;
 import pl.edu.agh.io.umniedziala.windowsHandlers.WindowsFunctionHandler;
 
 import java.util.Optional;
@@ -18,6 +19,7 @@ public class ActiveApplicationListener extends Thread {
 
         this.programRunningPeriodsManager = new ApplicationRunningPeriodsManager();
         this.checkingIntervalInMs = checkingIntervalInMs;
+        Configuration.getInstance().getMonitoredApplications();
     }
 
     public void run() {

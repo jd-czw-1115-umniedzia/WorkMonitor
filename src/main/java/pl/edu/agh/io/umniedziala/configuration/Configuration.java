@@ -1,9 +1,10 @@
 package pl.edu.agh.io.umniedziala.configuration;
 
 import com.moandjiezana.toml.Toml;
+import pl.edu.agh.io.umniedziala.model.ApplicationEntity;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Configuration {
     private static Configuration instance;
@@ -20,6 +21,7 @@ public class Configuration {
     private Long inactivityPeriod = 0L;
     private Long chartStart = 0L;
     private Long chartEnd = 0L;
+    private List<ApplicationEntity> monitoredApplications = new LinkedList<>();
 
     private Configuration() {
         GeneralConfigurationManager.getInstance();
@@ -32,6 +34,21 @@ public class Configuration {
         inactivityPeriod = config.getLong("monitor.inactivity_period", 15L);
         chartStart = config.getLong("monitor.chart.start", 0L);
         chartEnd = config.getLong("monitor.chart.end", 23L);
+
+        monitoredApplications = readMonitoredApplications(config);
+    }
+
+    private List<ApplicationEntity> readMonitoredApplications(Toml config) {
+        List<List<String>> input = config.getList("monitor.applications");
+
+        return input.stream()
+                .filter(s -> s.size() >= 3)
+                .map(
+                        s -> {
+                            Optional<ApplicationEntity> app = ApplicationEntity.findByName(s.get(0));
+                            return app.orElseGet(() -> ApplicationEntity.create(s.get(0), s.get(1), s.get(2)).get());
+                        }
+                ).collect(Collectors.toList());
     }
 
     public void resetToDefaults() {
@@ -105,6 +122,29 @@ public class Configuration {
 
         Map<String, Object> map = config.toMap();
         ((HashMap<String, Object>)((HashMap<String, Object>)map.get("monitor")).get("chart")).put("end", chartEnd);
+
+        GeneralConfigurationManager.getInstance().setConfigurationFromMap(map);
+
+        this.read();
+    }
+
+    public List<ApplicationEntity> getMonitoredApplications() {
+        return monitoredApplications;
+    }
+
+    public void setMonitoredApplications(List<ApplicationEntity> monitoredApplications) {
+        this.monitoredApplications = monitoredApplications;
+
+        Toml config = GeneralConfigurationManager.getInstance().config();
+
+        Map<String, Object> map = config.toMap();
+
+        List<List<String>> serialized = monitoredApplications.stream()
+                .map(
+                        a -> Arrays.asList(a.getName(), a.getApplicationPath(), a.getColor()))
+                .collect(Collectors.toList());
+
+        ((HashMap<String, Object>) map.get("monitor")).put("applications", serialized);
 
         GeneralConfigurationManager.getInstance().setConfigurationFromMap(map);
 

@@ -4,6 +4,7 @@ config_version = "1.0"
 [monitor]
 check_interval = 1000
 inactivity_period = 15
+applications = []
 
 [monitor.chart]
 start = 0
