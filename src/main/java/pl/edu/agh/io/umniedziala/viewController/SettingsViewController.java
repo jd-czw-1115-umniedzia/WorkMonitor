@@ -114,7 +114,6 @@ public class SettingsViewController {
             controller.setStage(colorsStage);
             controller.loadData();
             colorsStage.showAndWait();
-            colorsStage.setAlwaysOnTop(true);
 
         } catch (IOException e) {
             e.printStackTrace();

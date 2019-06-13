@@ -83,7 +83,6 @@ public class AppController {
                 controller.setStage(appStage);
                 controller.loadData();
                 appStage.show();
-                appStage.setAlwaysOnTop(true);
 
                 appWindowLoaded = true;
                 appStage.setOnCloseRequest((WindowEvent event) -> { appWindowLoaded = false; });
@@ -113,7 +112,6 @@ public class AppController {
                 controller.setAppController(this);
                 controller.setStage(reportStage);
                 reportStage.show();
-                reportStage.setAlwaysOnTop(true);
 
                 reportWindowLoaded = true;
                 reportStage.setOnCloseRequest((WindowEvent event) -> { reportWindowLoaded = false; });
@@ -141,8 +139,7 @@ public class AppController {
                 controller.setAppController(this);
                 controller.setStage(settingsStage);
                 controller.loadData();
-                settingsStage.show();
-                settingsStage.setAlwaysOnTop(true);
+                settingsStage.showAndWait();
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -169,7 +166,6 @@ public class AppController {
                 controller.setStage(eventStage);
                 controller.setDate(date);
                 eventStage.showAndWait();
-                eventStage.setAlwaysOnTop(true);
 
 
             } catch (IOException e) {
@@ -199,7 +195,6 @@ public class AppController {
                 controller.setStage(statisticsStage);
                 controller.loadData(from, to);
                 statisticsStage.show();
-                statisticsStage.setAlwaysOnTop(true);
 
                 statisticsWindowLoaded = true;
                 statisticsStage.setOnCloseRequest((WindowEvent event) -> { statisticsWindowLoaded = false;
@@ -230,7 +225,6 @@ public class AppController {
                 controller.setAppController(this);
                 controller.setStage(statisticsStage);
                 statisticsStage.show();
-                statisticsStage.setAlwaysOnTop(true);
 
                 statDialogWindowLoaded = true;
                 statisticsStage.setOnCloseRequest((WindowEvent event) -> { statDialogWindowLoaded = false; });
