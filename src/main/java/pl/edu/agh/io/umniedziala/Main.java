@@ -30,7 +30,7 @@ public class Main extends Application {
         ActivityListener activityListener = new ActivityListener();
         activityListener.start();
 
-        new BackgroundApplicationsMonitor(2000).start();
+        new BackgroundApplicationsMonitor(Configuration.getInstance().getCheckInterval().intValue()).start();
 
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("WorkMonitor");
