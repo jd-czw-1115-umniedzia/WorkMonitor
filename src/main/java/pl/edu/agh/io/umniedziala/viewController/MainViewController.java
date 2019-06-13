@@ -98,7 +98,7 @@ public class MainViewController {
         // Nasz timechart jest szeroki a bazę aktualizujemy często. Nie ma chyba potrzeby, żeby aktualizować
         // wykresy przy każdej zmianie w bazie. Uruchamiam tutaj timer, który co kilka minut aktualizuje wykres.
 
-        long repeatTime = 1 * 1 * 1000; // w milisekundach
+        long repeatTime = 10 * 1000; // w milisekundach
         refreshTimer.schedule(new TimerTask() {
             @Override
             public void run() {

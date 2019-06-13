@@ -74,7 +74,7 @@ public class WindowsFunctionHandler {
                     ProcessPathKernel32.MODULEENTRY32.ByReference me = new ProcessPathKernel32.MODULEENTRY32.ByReference();
                     ProcessPathKernel32.INSTANCE.Module32First(moduleSnapshot, me);
                     if (!me.szExePath().isEmpty())
-                        processesAndExecutePath.put(String.valueOf(processEntry.szExeFile), me.szExePath());
+                        processesAndExecutePath.put(String.valueOf(processEntry.szExeFile).trim(), me.szExePath());
                 }
                 finally {
                     kernel32.CloseHandle(moduleSnapshot);
