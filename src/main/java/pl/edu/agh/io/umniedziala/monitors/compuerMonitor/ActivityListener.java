@@ -75,7 +75,7 @@ public class ActivityListener extends Thread implements NativeMouseInputListener
         setActiveAgain(true);
     }
 
-    private void setActiveAgain(boolean active) {
+    private synchronized void setActiveAgain(boolean active) {
         activeAgain = active;
     }
 
