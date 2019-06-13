@@ -58,7 +58,7 @@ public class WindowsFunctionHandler {
         return success ? new String(buffer, 0, bufferSize.getValue()) : null;
     }
 
-    public static Map<String, String> getAllRunningProcesses() {
+    public synchronized static Map<String, String> getAllRunningProcesses() {
         Map<String, String> processesAndExecutePath = new HashMap<>();
 
         Kernel32 kernel32 = (Kernel32) Native.loadLibrary(Kernel32.class, W32APIOptions.DEFAULT_OPTIONS);
